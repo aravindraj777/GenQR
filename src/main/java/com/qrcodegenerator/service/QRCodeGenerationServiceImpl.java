@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Service
 @Slf4j
@@ -41,9 +44,23 @@ public class QRCodeGenerationServiceImpl implements  IQRCodeGenerationService{
         try{
             String finalMessage = (StringUtils.isBlank(message))? QRCODE_MESSAGE : message;
             log.info("Final input message -{}",finalMessage);
-
-
+            processQRCode(finalMessage, prepareOutputFileName(),charset,400,400);
         }
+        catch (WriterException | IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private String prepareOutputFileName(){
+        Date date = new Date();
+
+        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+        String formattedDate = dateFormat.format(date);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(QRCODE_LOCATION).append("\\").append("QRCode-").append(formattedDate).append(".png");
+        log.info("Final output file - "+sb.toString());
+        return sb.toString();
     }
 
     private void processQRCode(
